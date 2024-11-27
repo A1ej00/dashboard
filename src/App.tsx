@@ -1,14 +1,91 @@
+{/* Hooks */ }
+import { useEffect, useState } from 'react';
+
 import IndicatorWeather from './components/IndicatorWeather';
 import TableWeather from './components/TableWeather';
 import ControlWeather from './components/ControlWeather';
 import LineChartWeather from './components/LineChartWeather';
-import { useState } from 'react'
 import Grid from '@mui/material/Grid2' 
 import './App.css'
 
+interface Indicator {
+  title?: String;
+  subtitle?: String;
+  value?: String;
+}
+
 function App() {
+
+  {/* Variable de estado y función de actualización */}
+  let [indicators, setIndicators] = useState<Indicator[]>([])
+
+  useEffect(()=>{
+
+    {/* Hook: useEffect */}
+    let request = async () => {
+
+      {/* Request */}
+      let API_KEY = "643483bd59ac48b73e7af3e5bd372305"
+      let response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=Guayaquil&mode=xml&appid=${API_KEY}`)
+      let savedTextXML = await response.text();
+
+      {/* XML Parser */}
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(savedTextXML, "application/xml");
+
+      {/* Arreglo para agregar los resultados */}
+
+      let dataToIndicators : Indicator[] = new Array<Indicator>();
+
+      {/* 
+          Análisis, extracción y almacenamiento del contenido del XML 
+          en el arreglo de resultados
+      */}
+
+      let name = xml.getElementsByTagName("name")[0].innerHTML || ""
+      dataToIndicators.push({"title":"Location", "subtitle": "City", "value": name})
+
+      let location = xml.getElementsByTagName("location")[1]
+
+      let latitude = location.getAttribute("latitude") || ""
+      dataToIndicators.push({ "title": "Location", "subtitle": "Latitude", "value": latitude })
+
+      let longitude = location.getAttribute("longitude") || ""
+      dataToIndicators.push({ "title": "Location", "subtitle": "Longitude", "value": longitude })
+
+      let altitude = location.getAttribute("altitude") || ""
+      dataToIndicators.push({ "title": "Location", "subtitle": "Altitude", "value": altitude })
+
+      // console.log( dataToIndicators )
+
+      {/* Modificación de la variable de estado mediante la función de actualización */}
+      setIndicators( dataToIndicators )
+
+    }
+
+    request();
+
+  },[])
+
+  let renderIndicators = () => {
+
+    return indicators
+      .map(
+        (indicator, idx) => (
+          <Grid key={idx} size={{ xs: 12, xl: 3 }}>
+            <IndicatorWeather 
+              title={indicator["title"]} 
+              subtitle={indicator["subtitle"]} 
+              value={indicator["value"]} 
+            />
+          </Grid>
+        )
+      )
+  }
+
   const [] = useState(0)
 
+  {/* JSX */}
   return (
     <Grid container spacing={5}>
 
@@ -39,11 +116,12 @@ function App() {
         </Grid>
       </Grid>
 
+      {renderIndicators()}
+
       {/* Gráfico */}
       <Grid size={{ xs: 12, xl: 4 }}>
         <LineChartWeather/>
-      </Grid>
-   
+      </Grid>     
     </Grid>
   )
 }
