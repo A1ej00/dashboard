@@ -5,6 +5,7 @@ import IndicatorWeather from './components/IndicatorWeather';
 import TableWeather from './components/TableWeather';
 import ControlWeather from './components/ControlWeather';
 import LineChartWeather from './components/LineChartWeather';
+import item from './interface/item';
 import Grid from '@mui/material/Grid2' 
 import './App.css'
 
@@ -18,6 +19,7 @@ function App() {
 
   {/* Variable de estado y función de actualización */}
   let [indicators, setIndicators] = useState<Indicator[]>([])
+  let [items, setItems] = useState<item[]>([])
 
   useEffect(()=>{
 
@@ -61,6 +63,28 @@ function App() {
       {/* Modificación de la variable de estado mediante la función de actualización */}
       setIndicators( dataToIndicators )
 
+      let dataToItems : item[] = new Array<item>();
+
+      for (var i = 0; i < 6; i++) {
+        let time = xml.getElementsByTagName("time")[i]
+        let from = time.getAttribute("from")?.slice(11, 19) || ""
+        let to = time.getAttribute("to")?.slice(11, 19) || ""
+
+        let precipitation = xml.getElementsByTagName("precipitation")[i]
+        let probability = precipitation.getAttribute("probability") || ""
+
+        let humidity = xml.getElementsByTagName("humidity")[i]
+        let value = humidity.getAttribute("value") || ""
+
+        let clouds = xml.getElementsByTagName("clouds")[i]
+        let all = clouds.getAttribute("all") || ""
+
+        dataToItems.push({"dateStart": from, "dateEnd": to, "precipitation": probability, "humidity": value, "clouds": all})
+      }
+
+      console.log( dataToItems )
+
+      setItems( dataToItems )
     }
 
     request();
@@ -111,7 +135,7 @@ function App() {
             <ControlWeather/>
           </Grid>
           <Grid size={{ xs: 12, xl: 9 }}>
-            <TableWeather/>
+            <TableWeather itemsIn={ items } />
           </Grid>
         </Grid>
       </Grid>
