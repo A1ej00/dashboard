@@ -16,12 +16,11 @@ export default function IndicatorWeather(config: Indicator) {
               flexDirection: 'column'
             }}
           >
-            <Typography component="h2" variant="h6" 
-                        color="primary" gutterBottom>
+            <Typography component="h2" variant="h6" color="primary" gutterBottom>
                 {config.title} 
             </Typography>
             <Typography component="p" variant="h4">
-                {config.value.toString()}
+                {config.value}
             </Typography>
             <Typography color="text.secondary" sx={{ flex: 1 }}>
                 {config.subtitle}
