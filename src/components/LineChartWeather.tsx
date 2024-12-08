@@ -3,6 +3,8 @@ import { LineChart } from '@mui/x-charts/LineChart';
 
 import { useEffect, useState } from 'react';
 import linea from '../interface/linea';
+import { LineSeriesType } from '@mui/x-charts';
+import { MakeOptional } from '@mui/x-charts/internals';
 
 interface MyProp {
     selected: number
@@ -21,7 +23,7 @@ export default function LineChartWeather(props: MyProp) {
     }, [props])
 
     // Map selected value to the correct series
-    let seriesData = [];
+    let seriesData: MakeOptional<LineSeriesType, "type">[] = [];
     if (props.selected === -1) {
         // If no variable is selected, include all lines
         seriesData = [
