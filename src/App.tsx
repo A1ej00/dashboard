@@ -6,6 +6,7 @@ import TableWeather from './components/TableWeather';
 import ControlWeather from './components/ControlWeather';
 import LineChartWeather from './components/LineChartWeather';
 import item from './interface/item';
+import linea from './interface/linea';
 import Grid from '@mui/material/Grid2' 
 import './App.css'
 
@@ -20,6 +21,7 @@ function App() {
   {/* Variable de estado y función de actualización */}
   let [indicators, setIndicators] = useState<Indicator[]>([])
   let [items, setItems] = useState<item[]>([])
+  let [linea, setLinea] = useState<linea>({hora: [], nubes: [], lluvia: [], humedad: [] });
 
   useEffect(()=>{
 
@@ -58,14 +60,17 @@ function App() {
       let altitude = location.getAttribute("altitude") || ""
       dataToIndicators.push({ "title": "Location", "subtitle": "Altitude", "value": altitude })
 
-      // console.log( dataToIndicators )
-
       {/* Modificación de la variable de estado mediante la función de actualización */}
       setIndicators( dataToIndicators )
 
       let dataToItems : item[] = new Array<item>();
+      let emptyLinea: linea = {hora: [], nubes: [], lluvia: [], humedad: [] };
+      let hora : string[] = [];
+      let nub : number[] = [];
+      let llu : number[] = [];
+      let hum : number[] = [];
 
-      for (var i = 0; i < 6; i++) {
+      for (var i = 0; i < 7; i++) {
         let time = xml.getElementsByTagName("time")[i]
         let from = time.getAttribute("from")?.slice(11, 19) || ""
         let to = time.getAttribute("to")?.slice(11, 19) || ""
@@ -80,11 +85,19 @@ function App() {
         let all = clouds.getAttribute("all") || ""
 
         dataToItems.push({"dateStart": from, "dateEnd": to, "precipitation": probability, "humidity": value, "clouds": all})
+        hora.push(time.getAttribute("from")?.slice(11, 19) || "");
+        nub.push(parseInt(all, 10));
+        llu.push(parseFloat(probability) * 100);
+        hum.push(parseInt(value, 10));
       }
-
-      console.log( dataToItems )
-
+      emptyLinea.hora = hora;
+      emptyLinea.nubes = nub;
+      emptyLinea.lluvia = llu;
+      emptyLinea.humedad = hum;
+      console.log( emptyLinea )
+      
       setItems( dataToItems )
+      setLinea( emptyLinea )
     }
 
     request();
@@ -113,6 +126,8 @@ function App() {
   return (
     <Grid container spacing={5}>
 
+      {renderIndicators()}
+
       {/* Indicadores */}
       <Grid size={{ xs: 12, xl: 3 }}>
         <IndicatorWeather title={'Indicator 1'} subtitle={'Unidad 1'} value={"1.23"} /> 
@@ -127,25 +142,23 @@ function App() {
         <IndicatorWeather title={'Indicator 4'} subtitle={'Unidad 4'} value={"3.21"} />
       </Grid>
 
-      {/* Tabla */}
-      <Grid size={{ xs: 12, xl: 8 }}>
+
+      {/* Gráfico */}
+      <Grid size={{ xs: 12, xl: 4 }}>
         {/* Grid Anidado */}
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, xl: 3 }}>
             <ControlWeather/>
-          </Grid>
-          <Grid size={{ xs: 12, xl: 9 }}>
-            <TableWeather itemsIn={ items } />
+            <LineChartWeather lineaIn={ linea } />
           </Grid>
         </Grid>
       </Grid>
 
-      {renderIndicators()}
+      {/* Tabla */}
+      <Grid size={{ xs: 12, xl: 8 }}>
+        <TableWeather itemsIn={ items } />
+      </Grid>
 
-      {/* Gráfico */}
-      <Grid size={{ xs: 12, xl: 4 }}>
-        <LineChartWeather/>
-      </Grid>     
     </Grid>
   )
 }

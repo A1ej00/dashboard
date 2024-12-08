@@ -1,19 +1,30 @@
 import Paper from '@mui/material/Paper';
 import { LineChart } from '@mui/x-charts/LineChart';
 
-const uData = [4000, 3000, 2000, 2780, 1890, 2390, 3490];
-const pData = [2400, 1398, 9800, 3908, 4800, 3800, 4300];
+import { useEffect, useState } from 'react';
+import linea from '../interface/linea';
+
 const xLabels = [
-    'Page A',
-    'Page B',
-    'Page C',
-    'Page D',
-    'Page E',
-    'Page F',
-    'Page G',
+    'Page 1',
+    'Page 2',
+    'Page 3',
+    'Page 4',
+    'Page 5',
+    'page 6',
+    'page 7'
 ];
 
-export default function LineChartWeather() {
+interface MyProp {
+    lineaIn: linea
+}
+
+export default function LineChartWeather(props: MyProp) {
+    let [dummy, setDummy] = useState<linea>({hora: [], nubes: [], lluvia: [], humedad: [] })
+
+    useEffect(() => {
+        setDummy(props.lineaIn)
+    }, [props])
+
     return (
         <Paper
             sx={{
@@ -25,13 +36,14 @@ export default function LineChartWeather() {
 
             {/* Componente para un gráfico de líneas */}
             <LineChart
-                width={400}
-                height={250}
+                width={1200}
+                height={400}
                 series={[
-                    { data: pData, label: 'pv' },
-                    { data: uData, label: 'uv' },
+                    { data: dummy?.nubes, label: 'nubosidad' },
+                    { data: dummy?.humedad, label: 'humedad (%)' },
+                    { data: dummy?.lluvia, label: 'precipitacion (%)' }
                 ]}
-                xAxis={[{ scaleType: 'point', data: xLabels }]}
+                xAxis={[{scaleType: 'point', data: dummy?.hora}]}
             />
         </Paper>
     );

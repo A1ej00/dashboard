@@ -14,13 +14,13 @@ interface MyProp {
   itemsIn: item[];
 }
 
+
 export default function BasicTable(props: MyProp) {
   let [rows, setRows] = useState<item[]>([])
 
   useEffect( ()=> {
     setRows(props.itemsIn)
   }, [props])
-
 
   return (
     <TableContainer component={Paper}>
