@@ -12,14 +12,16 @@ import FormControl from '@mui/material/FormControl';
 
 {/* Interfaz SelectChangeEvent */}
 import Select, { SelectChangeEvent } from '@mui/material/Select';
+
+interface MyProp {
+    selected: number;
+    setSelected: (value: number) => void;
+}
     
-export default function ControlWeather() {
+export default function ControlWeather(props:MyProp) {
 
     {/* Constante de referencia a un elemento HTML */ }
     const descriptionRef = useRef<HTMLDivElement>(null);
-
-    {/* Variable de estado y función de actualización */}
-    let [, setSelected] = useState(-1)
 
     {/* Arreglo de objetos */}
     let items = [
@@ -36,7 +38,7 @@ export default function ControlWeather() {
 
         let idx = parseInt(event.target.value)
         // alert( idx );
-        setSelected( idx );
+        props.setSelected( idx );
 
         {/* Modificación de la referencia descriptionRef */}
         if (descriptionRef.current !== null) {
@@ -57,22 +59,19 @@ export default function ControlWeather() {
                     
                 <FormControl fullWidth>
                     <InputLabel id="simple-select-label">Variables</InputLabel>
-                    <Select labelId="simple-select-label" id="simple-select" label="Variables" defaultValue='-1' onChange={handleChange}>
+                    <Select labelId="simple-select-label" 
+                    id="simple-select" 
+                    label="Variables" 
+                    value={props.selected.toString()} 
+                    onChange={handleChange}
+                    >
                         <MenuItem key="-1" value="-1" disabled>Seleccione una variable</MenuItem>
                         {options}
                     </Select>
                 </FormControl>
             </Box>
 
-            {/* Use la variable de estado para renderizar del item seleccionado */}
-            {/*<Typography mt={2} component="p" color="text.secondary">
-            {
-                (selected >= 0)?items[selected]["description"]:""
-            }
-            </Typography>*/}
-
             <Typography ref={descriptionRef} mt={2} component="p" color="text.secondary" />
-            
         </Paper>
     )
 }

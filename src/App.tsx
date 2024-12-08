@@ -19,6 +19,7 @@ interface Indicator {
 function App() {
 
   {/* Variable de estado y función de actualización */}
+  const [selected, setSelected] = useState(-1);
   let [indicators, setIndicators] = useState<Indicator[]>([])
   let [items, setItems] = useState<item[]>([])
   let [linea, setLinea] = useState<linea>({hora: [], nubes: [], lluvia: [], humedad: [] });
@@ -148,12 +149,12 @@ function App() {
         {/* Grid Anidado */}
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, xl: 3 }}>
-            <ControlWeather/>
-            <LineChartWeather lineaIn={ linea } />
+            <ControlWeather selected={selected} setSelected={setSelected}/>
+            <LineChartWeather selected={selected} lineaIn={linea} />
           </Grid>
         </Grid>
       </Grid>
-
+      
       {/* Tabla */}
       <Grid size={{ xs: 12, xl: 8 }}>
         <TableWeather itemsIn={ items } />
