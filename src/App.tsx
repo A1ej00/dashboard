@@ -2,25 +2,23 @@
 import { useEffect, useState } from 'react';
 
 import IndicatorWeather from './components/IndicatorWeather';
+import LocatorWeather from './components/LocatorWeather';
 import TableWeather from './components/TableWeather';
 import ControlWeather from './components/ControlWeather';
 import LineChartWeather from './components/LineChartWeather';
 import item from './interface/item';
+import indicator from './interface/indicator';
+import locator from './interface/locator';
 import linea from './interface/linea';
 import Grid from '@mui/material/Grid2' 
 import './App.css'
 
-interface Indicator {
-  title?: String;
-  subtitle?: String;
-  value?: String;
-}
-
 function App() {
 
   {/* Variable de estado y función de actualización */}
-  const [selected, setSelected] = useState(-1);
-  let [indicators, setIndicators] = useState<Indicator[]>([])
+  let [selected, setSelected] = useState(-1);
+  let [indicators, setIndicators] = useState<indicator[]>([])
+  let [location, setLocation] = useState<locator>({})
   let [items, setItems] = useState<item[]>([])
   let [linea, setLinea] = useState<linea>({hora: [], nubes: [], lluvia: [], humedad: [] });
 
@@ -40,7 +38,14 @@ function App() {
 
       {/* Arreglo para agregar los resultados */}
 
-      let dataToIndicators : Indicator[] = new Array<Indicator>();
+      let dataToLocator : locator = {name: "", altitude: "", latitude: "", longitude: "" };
+      let dataToIndicators : indicator[] = [];
+      let dataToItems : item[] = new Array<item>();
+      let emptyLinea: linea = {hora: [], nubes: [], lluvia: [], humedad: [] };
+      let hora : string[] = [];
+      let nub : number[] = [];
+      let llu : number[] = [];
+      let hum : number[] = [];
 
       {/* 
           Análisis, extracción y almacenamiento del contenido del XML 
@@ -48,28 +53,30 @@ function App() {
       */}
 
       let name = xml.getElementsByTagName("name")[0].innerHTML || ""
-      dataToIndicators.push({"title":"Location", "subtitle": "City", "value": name})
+      dataToLocator.name = name
 
       let location = xml.getElementsByTagName("location")[1]
 
       let latitude = location.getAttribute("latitude") || ""
-      dataToIndicators.push({ "title": "Location", "subtitle": "Latitude", "value": latitude })
+      dataToLocator.latitude = latitude
 
       let longitude = location.getAttribute("longitude") || ""
-      dataToIndicators.push({ "title": "Location", "subtitle": "Longitude", "value": longitude })
+      dataToLocator.longitude = longitude 
 
       let altitude = location.getAttribute("altitude") || ""
-      dataToIndicators.push({ "title": "Location", "subtitle": "Altitude", "value": altitude })
+      dataToLocator.altitude = altitude
+      
+      let precipitation = xml.getElementsByTagName("precipitation")[0]
+      let probability = precipitation.getAttribute("probability") || ""
+      dataToIndicators.push({"title": "Lluvia", "value": (parseFloat(probability) * 100).toString() + "%"})
 
-      {/* Modificación de la variable de estado mediante la función de actualización */}
-      setIndicators( dataToIndicators )
+      let humidity = xml.getElementsByTagName("humidity")[0]
+      let value = humidity.getAttribute("value") || ""
+      dataToIndicators.push({"title": "Humedad", "value": value})
 
-      let dataToItems : item[] = new Array<item>();
-      let emptyLinea: linea = {hora: [], nubes: [], lluvia: [], humedad: [] };
-      let hora : string[] = [];
-      let nub : number[] = [];
-      let llu : number[] = [];
-      let hum : number[] = [];
+      let clouds = xml.getElementsByTagName("clouds")[0]
+      let all = clouds.getAttribute("all") || ""
+      dataToIndicators.push({"title": "Nubes", "value": all})
 
       for (var i = 0; i < 7; i++) {
         let time = xml.getElementsByTagName("time")[i]
@@ -97,6 +104,9 @@ function App() {
       emptyLinea.humedad = hum;
       console.log( emptyLinea )
       
+      {/* Modificación de la variable de estado mediante la función de actualización */}
+      setLocation( dataToLocator )
+      setIndicators( dataToIndicators )
       setItems( dataToItems )
       setLinea( emptyLinea )
     }
@@ -111,11 +121,7 @@ function App() {
       .map(
         (indicator, idx) => (
           <Grid key={idx} size={{ xs: 12, xl: 3 }}>
-            <IndicatorWeather 
-              title={indicator["title"]} 
-              subtitle={indicator["subtitle"]} 
-              value={indicator["value"]} 
-            />
+            <IndicatorWeather indicatorsIn={ indicator }/>
           </Grid>
         )
       )
@@ -127,10 +133,15 @@ function App() {
   return (
     <Grid container spacing={5}>
 
+
+      <Grid size={{ xs: 12, xl: 3 }}>
+        <LocatorWeather locatorIn={ location } /> 
+      </Grid>
+
       {renderIndicators()}
 
       {/* Indicadores */}
-      <Grid size={{ xs: 12, xl: 3 }}>
+      {/*<Grid size={{ xs: 12, xl: 3 }}>
         <IndicatorWeather title={'Indicator 1'} subtitle={'Unidad 1'} value={"1.23"} /> 
       </Grid>
       <Grid size={{ xs: 12, xl: 3 }}>
@@ -141,7 +152,7 @@ function App() {
       </Grid>
       <Grid size={{ xs: 12, xl: 3 }}>
         <IndicatorWeather title={'Indicator 4'} subtitle={'Unidad 4'} value={"3.21"} />
-      </Grid>
+      </Grid>*/}
 
 
       {/* Gráfico */}

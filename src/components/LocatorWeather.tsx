@@ -1,21 +1,23 @@
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import indicator from '../interface/indicator';
+import locator from '../interface/locator';
 import { useEffect, useState } from 'react';
 
 interface MyProp {
-    indicatorsIn: indicator;
+    locatorIn: locator;
   }
 
 export default function IndicatorWeather(props: MyProp) {
 
-    let [indi, setIndi] = useState<indicator>({
-        title : "",
-        value : "" 
+    let [location, setLocation] = useState<locator>({
+        name: "",
+        altitude: "",
+        latitude: "",
+        longitude: ""
     })
 
     useEffect(() => {
-        setIndi(props.indicatorsIn)
+        setLocation(props.locatorIn)
     }, [props])
 
     return (
@@ -26,11 +28,11 @@ export default function IndicatorWeather(props: MyProp) {
               flexDirection: 'column'
             }}
           >
-            <Typography component="h2" variant="h6" color="primary" gutterBottom>
-                {indi.title} 
-            </Typography>
             <Typography component="p" variant="h4">
-                {indi.value}
+                {location.name}
+            </Typography>
+            <Typography color="text.secondary" sx={{ flex: 1 }}>
+                {location.latitude}° S, {location.longitude}° W, {location.altitude} meters
             </Typography>
         </Paper> 
     )
