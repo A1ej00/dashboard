@@ -72,7 +72,7 @@ function App() {
 
       let humidity = xml.getElementsByTagName("humidity")[0]
       let value = humidity.getAttribute("value") || ""
-      dataToIndicators.push({"title": "Humedad", "value": value})
+      dataToIndicators.push({"title": "Humedad", "value": parseFloat(value).toString() + "%"})
 
       let clouds = xml.getElementsByTagName("clouds")[0]
       let all = clouds.getAttribute("all") || ""
@@ -92,7 +92,7 @@ function App() {
         let clouds = xml.getElementsByTagName("clouds")[i]
         let all = clouds.getAttribute("all") || ""
 
-        dataToItems.push({"dateStart": from, "dateEnd": to, "precipitation": probability, "humidity": value, "clouds": all})
+        dataToItems.push({"dateStart": from, "dateEnd": to, "precipitation": (parseFloat(probability) * 100).toString(), "humidity": value, "clouds": all})
         hora.push(time.getAttribute("from")?.slice(11, 19) || "");
         nub.push(parseInt(all, 10));
         llu.push(parseFloat(probability) * 100);

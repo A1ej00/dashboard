@@ -29,8 +29,8 @@ export default function BasicTable(props: MyProp) {
           <TableRow>
             <TableCell component="th" scope="row">Hora de inicio</TableCell>
             <TableCell component="th" scope="row">Hora de fin</TableCell>
-            <TableCell component="th" scope="row">Precipitación</TableCell>
-            <TableCell component="th" scope="row">Humedad</TableCell>
+            <TableCell component="th" scope="row">Precipitación (%)</TableCell>
+            <TableCell component="th" scope="row">Humedad (%)</TableCell>
             <TableCell component="th" scope="row">Nubosidad</TableCell>
           </TableRow>
         </TableHead>
@@ -42,8 +42,8 @@ export default function BasicTable(props: MyProp) {
             >
               <TableCell component="th" scope="row">{row.dateStart}</TableCell>
               <TableCell component="th" scope="row">{row.dateEnd}</TableCell>
-              <TableCell component="th" scope="row">{row.precipitation}</TableCell>
-              <TableCell component="th" scope="row">{row.humidity}</TableCell>
+              <TableCell component="th" scope="row">{row.precipitation + "%"}</TableCell>
+              <TableCell component="th" scope="row">{row.humidity + "%"}</TableCell>
               <TableCell component="th" scope="row">{row.clouds}</TableCell>
             </TableRow>
           ))}
@@ -52,3 +52,4 @@ export default function BasicTable(props: MyProp) {
     </TableContainer>
   );
 }
+
